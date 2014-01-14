@@ -1,14 +1,22 @@
+String.prototype.capitalize = function(){
+	return this.replace(/^./, function(letter){
+		return letter.toUpperCase();
+	});
+}
 App = {
-	url: 'http://localhost/neofaciliti',
-	base: function( name , model){
+	options: {
+		engine: 'cakephp',
+		url: 'localhost/cherry'
+	},
+	base: function( singular, plural ){
 
 		if( this.constructor != App.base ){
-			return new App.base(name, model);
+			return new App.base(singular, plural);
 		}
 
 		var self = this;
-			self.name = name;
-			self.model = model;
+			self.plural = plural;
+			self.singular = singular;
 		
 		self._set = function( key, value ){
 			self[key] = value;
@@ -16,17 +24,14 @@ App = {
 		return self;
 	},
 	request: function(url, data, callback){
-		var url = App.url + '/' + url;
+		var url = App.options.url + '/' + url;
 		if( data.constructor == Function && !callback )
-			$.get(url, data, /* 'json' */);
+			$.get(url, data /*, 'json' */);
 		else 
-			$.post(url, data, callback, /* 'json' */);
+			$.post(url, data, callback /*, 'json' */);
 	},
 	setup: function( options ){
-		var options = $.extend({
-			engine: 'cakephp',
-			url: 'localhost/cherry'
-		}, options);
+		this.options = $.extend(this.options, options);
 	}
 };
 
@@ -36,7 +41,7 @@ App.base.prototype = {
 	validator: null,
 	checkator: [],
 	find: function(){
-		App.request( this.name + '/list', { limit:5 } , function(){
+		App.request( this.plural + '/list', { limit:5 } , function(){
 
 		});
 	},	
@@ -73,8 +78,13 @@ App.base.prototype = {
 		this._set('data', object); 
 		return this;
 	},
-	_ToCakeFormat: function( key, attr ){
-		var str = 'data[' + this.model +']['+key+']';
+	_toDataFormat: function( key, attr ){
+		var str = '['+ key +']';
+		if( App.options.engine == 'cakephp' )
+			str = 'data[' + this.singular.capitalize() +']' + str ;
+		else
+			str = this.singular + str;
+
 		if( attr ) str += '['+attr+']';
 
 		return str;
@@ -87,10 +97,10 @@ App.base.prototype = {
 		$.each(data, function( key, value ){
 			if( value.constructor == Date ){
 				var day = value.getDate();
-				serialized[ self._toCakeFormat( key, 'day' ) ] = day < 10 ? '0' + day : day + '';
-				serialized[ self._toCakeFormat( key, 'year') ] = value.getFullYear() + '';
-				serialized[ self._toCakeFormat( key, 'month') ] = value.getMonth() + 1 + '';
-			} else serialized[ self._toCakeFormat( key ) ] = value;
+				serialized[ self._toDataFormat( key, 'day' ) ] = day < 10 ? '0' + day : day + '';
+				serialized[ self._toDataFormat( key, 'year') ] = value.getFullYear() + '';
+				serialized[ self._toDataFormat( key, 'month') ] = value.getMonth() + 1 + '';
+			} else serialized[ self._toDataFormat( key ) ] = value;
 		});
 
 		return serialized;
