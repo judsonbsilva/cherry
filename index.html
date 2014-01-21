@@ -4,10 +4,73 @@
 	<meta charset='utf-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
 	<title>Cherry.js</title>
-	<script type='text/javascript' src='http://code.jquery.com/jquery-1.10.2.min.js'></script>
+	<script type='text/javascript' src='jquery.js'></script>
+	<script type='text/javascript' src='bootstrap.js'></script>
 	<script type='text/javascript' src='cherry.js'></script>
+	<script type='text/javascript' src='tmpl.js'></script>
+	<link rel='stylesheet' type='text/css' href='bootstrap.css'>
 </head>
 <body>
 	<h1>Teste!</h1>
+	<a href="#" data-toggle="tooltip" title="first tooltip">hover over me</a>
+	<script type='text/x-tmpl' id='cherry-field'>
+		{%  var output = [];
+			o.class = o.class ? o.class + ' cherry-input' : 'cherry-input';
+			$.each(o, function( attr, value ){
+				if( attr == 'title')
+					o.class += ' cherry-tooltip';
+				else if ( attr == 'class' || attr == 'label' ){ return true }
+				output.push( attr + '=' + value );
+			}); 
+		%}
+		<input {%= output.join(' ') %} class='{%= o.class %}' >
+	</script>
+
+	<script type='text/x-tmpl' id='cherry-form'>
+		<form action='#' class='cherry-form{%= o.resource ? ' '+ o.resource : '' %}'>
+			<fieldset>
+				<legend>{%= o.title %}</legend>
+				{% $.each(o.fields, function(name, attr){ %}
+					<label class='cherry-label'>{%= attr.label %}</label>
+					{% attr.name = name; 
+					   include('cherry-field', attr); %}
+				{% }); %}
+				<div class='form-actions'>
+					<button class='btn submit-cherry-form'>{%= o.submit || 'Submit'  %}</button>
+				</div>
+			</fieldset>
+		</form>
+	</script>
+	<script type='text/javascript'>
+$(function(){
+	var bodi = $('body');
+		bodi.append( tmpl('cherry-form',{
+			title:'Formulário',
+			resource:'name',
+			fields:{
+				name:{
+					label: 'Nome',
+					type:'text',
+					title: 'uhu'
+				}, 
+				yearold:{
+					label: 'Idade',
+					type: 'number',
+					class: 'uhu'
+				}
+			} 
+		}));
+
+	$('.cherry-tooltip').attr('data-toogle', 'tooltip').tooltip();
+	$('.submit-cherry-form').on('click',function(ev){
+		ev.preventDefault();
+	})
+
+	var teste = new App.base('client','clients');
+		teste.setup({ name: String, nascimento: Date, altura: Number });
+		bodi.append( teste.makeForm() );
+
+});
+	</script>
 </body>
 </html>
