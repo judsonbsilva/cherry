@@ -103,14 +103,18 @@ App.base.prototype = {
 			fields[name] = attr;
 		});
 		
-		return { fields: fields };
+		return fields;
 	},
 	makeForm: function( data ){
 
+		var fields = data.fields ? $.extend(this._makeFields(), data.fields ) : this._makeFields();
+		delete data.fields;
+		
 		var data = $.extend({
 			title: 'Formulário',
-			resource: this.singular
-		}, this._makeFields() , data );
+			resource: this.singular,
+			fields: fields
+		}, data );
 
 		console.log(data);
 		console.log('KKKk...')

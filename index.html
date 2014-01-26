@@ -43,23 +43,6 @@
 	</script>
 	<script type='text/javascript'>
 $(function(){
-	var bodi = $('body');
-		bodi.append( tmpl('cherry-form',{
-			title:'Formulário',
-			resource:'name',
-			fields:{
-				name:{
-					label: 'Nome',
-					type:'text',
-					title: 'uhu'
-				}, 
-				yearold:{
-					label: 'Idade',
-					type: 'number',
-					class: 'uhu'
-				}
-			} 
-		}));
 
 	$('.cherry-tooltip').attr('data-toogle', 'tooltip').tooltip();
 	$('.submit-cherry-form').on('click',function(ev){
@@ -68,7 +51,7 @@ $(function(){
 
 	var teste = new App.base('client','clients');
 		teste.setup({ name: String, nascimento: Date, altura: Number });
-		bodi.append( teste.makeForm() );
+		$('body').append( teste.makeForm({ title:'Adicionar', fields:{ name: { value: 'Gabriel' } } }) );
 
 });
 	</script>
