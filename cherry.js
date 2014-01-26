@@ -38,7 +38,7 @@ App = {
 
 App.base.prototype = {
 	constructor: App.base,
-	validator: null,
+	validation: null,
 	checkator: [],
 	find: function(){
 		App.request( this.plural + '/list', { limit:5 } , function(){
@@ -49,19 +49,46 @@ App.base.prototype = {
 		this.validator = validation;
 		return this;
 	},
-	validate: function(){
-		if( !this.validator ){ return true; }
+	_validate: function(){
+		if( !this.validation ){ return true; }
 
 		var data = this.getAll(),
-			validation = true,
+			isValid = true,
 			self = this;
 
 		$.each(data, function( key, value ){
-			if( value.constructor != self.validator[key] ){
-				validation = false;
+			if( value.constructor != self.validation[key] ){
+				isValid = false;
 			}
 		});
-		return validation;
+		return isValid;
+	},
+	makeForm: function( fields ){
+		var fields = this.validation ? $.extend(validation, fields) : fields,
+			form = $('<form action="#" onsubmit="#"></form>');
+
+		$.each( fields, function( name, value ){
+			var defaults = {
+				label: name,
+				type: 'text',
+				required: 'required'	
+			};
+			if( value.constructor == Function ){
+				if( value == String ){ defaults.type == 'text' }
+				else { defaults.type = value.name.toLowerCase() }
+				value = defaults;
+			} else { value = $.extend(defaults, value) }
+
+			form.append(
+				'<div class="input"><label>'+ value.label +
+				'</label><input name="'+name +
+				'" type="'+ value.type +
+				'" required="required"></div>'
+			);
+		});
+		form.append('<button type="submit">UHU</button>');
+
+		return form;
 	},
 	getAll: function(){
 		return this.data || {};
@@ -116,8 +143,8 @@ App.base.prototype = {
 	},
 	create: function(callback){
 		this._beforeCall();
-		if( this.validate() ){
-			App.request( this.name + '/add', this.serialize(), callback);
+		if( this._validate() ){
+			App.request( this.plural + '/add', this.serialize(), callback);
 		} else {
 			callback({ error: 'Erro na validação dos dados' });
 		}
@@ -125,7 +152,7 @@ App.base.prototype = {
 	edit: function(){
 		this._beforeCall();
 		if( this.validate() ){
-			App.request( this.name + '/add', this.serialize(), callback);
+			App.request( this.plural + '/add', this.serialize(), callback);
 		} else {
 			callback({ error: 'Erro na validação dos dados' });
 		}
