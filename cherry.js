@@ -116,6 +116,38 @@ App.base.prototype = {
 
 		return str;
 	},
+	_makeFields: function(){
+		var defaults = {
+				'Number':{ type:'number' },
+				'String':{ type:'text' },
+				'Date':{ type:'date' }			
+			},
+			fields = {};
+		
+		$.each( this.validator, function(name, type){
+			var attr = defaults[ type.name ];
+				attr.label = name;
+			fields[name] = attr;
+		});
+		
+		return fields;
+	},
+	makeForm: function( data ){
+
+		var fields = data.fields ? $.extend(this._makeFields(), data.fields ) : this._makeFields();
+		delete data.fields;
+		
+		var data = $.extend({
+			title: 'Formulário',
+			resource: this.singular,
+			fields: fields
+		}, data );
+
+		console.log(data);
+		console.log('KKKk...')
+
+		return tmpl('cherry-form', data);
+	},
 	serialize: function(){
 		var data = this.getAll(),
 			self = this,
