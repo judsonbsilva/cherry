@@ -13,25 +13,33 @@
 <body>
 	<h1>Teste!</h1>
 	<a href="#" data-toggle="tooltip" title="first tooltip">hover over me</a>
-	<!--<script type='text/x-tmpl' id='cherry-field'>
-		{%  var output = [];
-			o.class = o.class ? o.class + ' cherry-input' : 'cherry-input';
+		<script type='text/x-tmpl' id='cherry-field'>{%
+			var output = [],
+				specials = ['class','label','comment','field']
+			
+			o.class = o.class ? [o.class ,'cherry-input'] : ['cherry-input'];
+			
 			$.each(o, function( attr, value ){
-				if( attr == 'title'){ o.class += ' cherry-tooltip' }
-				else if ( attr == 'class' || attr == 'label' ){ return true }
+				if( attr == 'title'){ o.class.push('cherry-tooltip') }
+				else if ( specials.lastIndexOf(attr) > -1 ){ return true }
 				output.push( attr + '=' + value );
 			}); 
-		%}
-		<div class='cherry-field {%= o.type %}'>
-		{% if( o.type == 'checkbox' ){ %}
-		<label class='cherry-label {%= o.type%}'>
-			<input {%= output.join(' ') %} class='{%= o.class %}' >
+		%}{%= output.join(' ') %} class='{%= o.class.join(' ') %}'
+	</script>
+
+	<script type='text/x-tmpl' id='cherry-input'>
+		<div class='cherry-field cherry-{%= o.type %}'>
+		<label>{%= o.label %}</label>
+		<input {%= include(App.templates.attrs, o); %}>
+		</div>
+	</script>
+
+	<script type='text/x-tmpl' id='cherry-list'>
+		<div class='cherry-field cherry-{%= o.type %}'>
+		<label>
+			<input {%= include(App.templates.attrs, o); %}>
 			{%= o.label %}
 		</label>
-		{% } else { %}
-		<label class='cherry-label'>{%= o.label %}</label>
-		<input {%= output.join(' ') %} class='{%= o.class %}' >
-		{% } %}
 		</div>
 	</script>
 

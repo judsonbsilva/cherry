@@ -66,35 +66,31 @@ App = {
 	dataTypes: {
 		string:{
 			constructor: String,
-			field: 'text'
+			type: 'text'
 		},
 		number:{
 			constructor: Number,
-			field:'number'
+			type:'number'
 		},
 		boolean:{
 			constructor: Boolean,
-			field:'checkbox'
+			type:'checkbox'
 		},
 		date:{
 			constructor: Date,
-			field:'date'
+			type:'date'
 		},
 		email:{
 			constructor: String,
-			field:'email'
+			type:'email'
 		},
 		list:{
 			constructor: Number,
-			field:'radio'
+			type:'select'
 		},
-		option:{
-			constructor: Number,
-			field:'select'
-		}
 		text:{
 			constructor: String,
-			field:'textarea'
+			type:'textarea'
 		}
 	}
 };
@@ -110,7 +106,10 @@ App.base.prototype = {
 		});
 	},
 	setup: function( validation ){
-		this.validation = validation;
+		$.each(validation, function(){
+
+		});
+		//this.validation = validation;
 		return this;
 	},
 	_validate: function(){
